@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NUnit.NSubstitute.Models;
 using NUnit.NSubstitute.Services;
 
 namespace NUnit.NSubstitute.Controllers
@@ -21,13 +22,38 @@ namespace NUnit.NSubstitute.Controllers
             return Ok(employees);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
             var employee = _service.GetById(id);
-            if (employee == null) 
+            if (employee == null)
                 return NotFound();
             return Ok(employee);
+        }
+
+        [HttpPost]
+        public IActionResult Post([FromBody] Employee employee)
+        {
+            _service.Create(employee);
+            return Ok();
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] Employee employee)
+        {
+            var updatedEmployee = _service.Update(id, employee);
+            if (updatedEmployee == null)
+                return NotFound();
+            return Ok(updatedEmployee);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var deletedEmployee = _service.Delete(id);
+            if (deletedEmployee == null)
+                return NotFound();
+            return Ok(deletedEmployee);
         }
     }
 }
