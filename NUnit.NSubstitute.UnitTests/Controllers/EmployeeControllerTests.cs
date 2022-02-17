@@ -14,12 +14,14 @@ namespace NUnit.NSubstitute.UnitTests.Controllers
     {
         private IEmployeeService _service;
         private EmployeesController _controller;
+        private Employee _employee;
 
         [SetUp]
         public void SetUp()
         {
             _service = Substitute.For<IEmployeeService>();
             _controller = new EmployeesController(_service);
+            _employee = new Employee { Id = 1, Name = "John", Address = "Kathmandu" };
         }
 
         [Test]
@@ -29,8 +31,7 @@ namespace NUnit.NSubstitute.UnitTests.Controllers
             _service.Get()
                 .Returns(new List<Employee> 
                 {
-                    new Employee { Id = 1, Name = "John Doe", Address = "America" },
-                    new Employee { Id = 2, Name = "Chris Jericho", Address = "Canada" },
+                    _employee
                 });
 
             // Act
@@ -64,19 +65,19 @@ namespace NUnit.NSubstitute.UnitTests.Controllers
         public void GetById_EmployeeIdExists_ReturnsOkObjectResult()
         {
             _service.GetById(1)
-                .Returns(new Employee { Id = 1, Name = "John Doe", Address = "America" });
+                .Returns(_employee);
 
             var result = _controller.GetById(1);
             var okObject = result as OkObjectResult;
-            var employee = okObject?.Value as Employee;
+            var objectValue = okObject?.Value as Employee;
 
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(okObject?.Value);
             Assert.IsInstanceOf<Employee>(okObject?.Value);
             Assert.AreEqual(okObject?.StatusCode, 200);
-            Assert.AreEqual(employee?.Id, 1);
-            Assert.AreEqual(employee?.Name, "John Doe");
-            Assert.AreEqual(employee?.Address, "America");
+            Assert.AreEqual(objectValue?.Id, _employee.Id);
+            Assert.AreEqual(objectValue?.Name, _employee.Name);
+            Assert.AreEqual(objectValue?.Address, _employee.Address);
         }
     }
 }
