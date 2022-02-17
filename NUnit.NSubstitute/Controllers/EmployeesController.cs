@@ -20,5 +20,14 @@ namespace NUnit.NSubstitute.Controllers
             var employees = _service.Get();
             return Ok(employees);
         }
+
+        [HttpGet]
+        public IActionResult GetById(int id)
+        {
+            var employee = _service.GetById(id);
+            if (employee == null) 
+                return NotFound();
+            return Ok(employee);
+        }
     }
 }
