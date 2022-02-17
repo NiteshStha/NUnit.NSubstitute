@@ -15,6 +15,7 @@ namespace NUnit.NSubstitute.UnitTests.Controllers
         private IEmployeeService _service;
         private EmployeesController _controller;
         private Employee _employee;
+        private int _id;
 
         [SetUp]
         public void SetUp()
@@ -22,6 +23,7 @@ namespace NUnit.NSubstitute.UnitTests.Controllers
             _service = Substitute.For<IEmployeeService>();
             _controller = new EmployeesController(_service);
             _employee = new Employee { Id = 1, Name = "John", Address = "Kathmandu" };
+            _id = 1;
         }
 
         [Test]
@@ -49,10 +51,10 @@ namespace NUnit.NSubstitute.UnitTests.Controllers
         public void GetById_EmployeeIdDoesNotExists_ReturnsNotFoundObjectResult()
         {
             // Arrange
-            _service.GetById(1).ReturnsNull();
+            _service.GetById(_id).ReturnsNull();
 
             // Act
-            var result = _controller.GetById(1);
+            var result = _controller.GetById(_id);
             var notFoundObject = result as NotFoundResult;
 
             // Assert
@@ -64,14 +66,14 @@ namespace NUnit.NSubstitute.UnitTests.Controllers
         [Test]
         public void GetById_EmployeeIdExists_ReturnsOkObjectResult()
         {
-            _service.GetById(1)
+            _service.GetById(_id)
                 .Returns(_employee);
 
-            var result = _controller.GetById(1);
+            var result = _controller.GetById(_id);
             var okObject = result as OkObjectResult;
             var objectValue = okObject?.Value as Employee;
 
-            _service.Received(1).GetById(1);
+            _service.Received(1).GetById(_id);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(okObject?.Value);
             Assert.IsInstanceOf<Employee>(okObject?.Value);
@@ -93,24 +95,24 @@ namespace NUnit.NSubstitute.UnitTests.Controllers
         [Test]
         public void Update_EmployeeIdDoesNotExists_ReturnNotFoundResult()
         {
-            _service.Update(100, _employee).ReturnsNull();
+            _service.Update(_id, _employee).ReturnsNull();
 
-            var result = _controller.Put(100, _employee);
+            var result = _controller.Put(_id, _employee);
 
-            _service.Received(1).Update(100, _employee);
+            _service.Received(1).Update(_id, _employee);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
         public void Update_EmployeeIdExists_ReturnOkObjectResult()
         {
-            _service.Update(1, _employee).Returns(_employee);
+            _service.Update(_id, _employee).Returns(_employee);
 
-            var result = _controller.Put(1, _employee);
+            var result = _controller.Put(_id, _employee);
             var okObject = result as OkObjectResult;
             var objectValue = okObject?.Value as Employee;
 
-            _service.Received(1).Update(1, _employee);
+            _service.Received(1).Update(_id, _employee);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.AreEqual(objectValue, _employee);
         }
@@ -118,24 +120,24 @@ namespace NUnit.NSubstitute.UnitTests.Controllers
         [Test]
         public void Delete_EmployeeIdDoesNotExists_ReturnNotFoundResult()
         {
-            _service.Delete(100).ReturnsNull();
+            _service.Delete(_id).ReturnsNull();
 
-            var result = _controller.Delete(100);
+            var result = _controller.Delete(_id);
 
-            _service.Received(1).Delete(100);
+            _service.Received(1).Delete(_id);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
         public void Delete_EmployeeIdExists_ReturnOkObjectResult()
         {
-            _service.Delete(1).Returns(_employee);
+            _service.Delete(_id).Returns(_employee);
 
-            var result = _controller.Delete(1);
+            var result = _controller.Delete(_id);
             var okObject = result as OkObjectResult;
             var objectValue = okObject?.Value as Employee;
 
-            _service.Received(1).Delete(1);
+            _service.Received(1).Delete(_id);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.AreEqual(objectValue, _employee);
         }
