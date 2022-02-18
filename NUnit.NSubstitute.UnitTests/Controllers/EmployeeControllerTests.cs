@@ -93,7 +93,7 @@ namespace NUnit.NSubstitute.UnitTests.Controllers
         }
 
         [Test]
-        public void Update_EmployeeIdDoesNotExists_ReturnNotFoundResult()
+        public void Put_EmployeeIdDoesNotExists_ReturnNotFoundResult()
         {
             _service.Update(_id, _employee).ReturnsNull();
 
@@ -104,7 +104,19 @@ namespace NUnit.NSubstitute.UnitTests.Controllers
         }
 
         [Test]
-        public void Update_EmployeeIdExists_ReturnOkObjectResult()
+        public void Put_IdAndEmployeeIdDoesNotMatch_ReturnNotFoundResult()
+        {
+            var randomId = Arg.Any<int>();
+            _service.Update(randomId, _employee).ReturnsNull();
+
+            var result = _controller.Put(randomId, _employee);
+
+            _service.Received().Update(randomId, _employee);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public void Put_EmployeeIdExists_ReturnOkObjectResult()
         {
             _service.Update(_id, _employee).Returns(_employee);
 
